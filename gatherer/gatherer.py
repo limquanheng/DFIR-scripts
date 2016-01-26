@@ -109,9 +109,8 @@ def output():
 
 if __name__ == "__main__":
 
-    imagefile = "\\\\.\\PhysicalDrive0"
-    checkAdmin()
-    get_processes(output())
-    get_updates(output())
-    timeline(output(),args.path,args.search)
-    collectFromDisk(imagefile,output())
+	checkAdmin()
+    #get_processes(output())
+    #get_updates(output())
+	timeline(args.imagefile,output(),args.path,args.search)
+    #collectFromDisk(imagefile,output())

@@ -129,23 +129,24 @@ def directoryRecurse(directoryObject, parentPath,search):
         #print e
         continue
 
-def timeline(output,dirPath,search):
+def timeline(imagefile,output,filename,dirPath,search):
     outdir = output + "/vol"
     if not os.path.exists(outdir): os.makedirs(outdir)
-    output = output + "/vol/timeline.csv"
+    output = output + "/vol/" + filename
     outfile = open(output,'wb')
     outfile.write('"Inode","Full Path","Creation Time","Modified Time","Accessed Time","Size","MD5 Hash","SHA1 Hash"\n')
     global wr
     wr = csv.writer(outfile, quoting=csv.QUOTE_ALL)
 
-    partitionList = psutil.disk_partitions()
-    for partition in partitionList:
-      imagehandle = pytsk3.Img_Info('\\\\.\\'+partition.device.strip("\\"))
-      if 'NTFS' in partition.fstype:
-        filesystemObject = pytsk3.FS_Info(imagehandle)
-        directoryObject = filesystemObject.open_dir(path=dirPath)
-        print "Directory:",dirPath
-        directoryRecurse(directoryObject,[],search)
+    imagehandle = pytsk3.Img_Info(imagefile)
+    partitionTable = pytsk3.Volume_Info(imagehandle)
+    for partition in partitionTable:
+	  print partition.desc
+	  if 'NTFS' in partition.desc:
+		filesystemObject = pytsk3.FS_Info(imagehandle, offset=(partition.start*512))
+		directoryObject = filesystemObject.open_dir(path=dirPath)
+		print "Directory:",dirPath
+		directoryRecurse(directoryObject,[],search)
 
 """
 CollectFromDisk is designed to extract a predefined set of files from a disk image or live disk.
