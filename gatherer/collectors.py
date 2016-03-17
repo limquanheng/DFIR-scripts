@@ -1,7 +1,7 @@
 __author__ = 'spydir'
 import pytsk3
 import datetime
-import wmi
+#import wmi
 import json
 import csv
 import sys
@@ -16,56 +16,56 @@ import re
 import psutil
 from artifacts import files
 
-def get_processes(output):
-    outdir = output + "/vol"
-    if not os.path.exists(outdir): os.makedirs(outdir)
-    output = output + "/vol/processes.json"
-    c = wmi.WMI()
-    process_list = []
+# def get_processes(output):
+    # outdir = output + "/vol"
+    # if not os.path.exists(outdir): os.makedirs(outdir)
+    # output = output + "/vol/processes.json"
+    # c = wmi.WMI()
+    # process_list = []
 
-    for process in c.Win32_Process ():
-        data = { 'name': process.Name,
-             'pid': process.ProcessId,
-             'ppid': process.ParentProcessID,
-             'path': process.ExecutablePath,
-             'cmdline': process.CommandLine }
-        process_list.append(data)
+    # for process in c.Win32_Process ():
+        # data = { 'name': process.Name,
+             # 'pid': process.ProcessId,
+             # 'ppid': process.ParentProcessID,
+             # 'path': process.ExecutablePath,
+             # 'cmdline': process.CommandLine }
+        # process_list.append(data)
 
-    with open(output,'w') as outfile:
-        for i in process_list:
-            json.dump(i, outfile)
+    # with open(output,'w') as outfile:
+        # for i in process_list:
+            # json.dump(i, outfile)
 
-def get_startup(output):
-    outdir = output + "/vol"
-    if not os.path.exists(outdir): os.makedirs(outdir)
-    output = output + "/vol/startup.json"
-    c = wmi.WMI()
-    startup_list = []
+# def get_startup(output):
+    # outdir = output + "/vol"
+    # if not os.path.exists(outdir): os.makedirs(outdir)
+    # output = output + "/vol/startup.json"
+    # c = wmi.WMI()
+    # startup_list = []
 
-    for s in c.Win32_StartupCommand ():
+    # for s in c.Win32_StartupCommand ():
 
-        print "[%s] %s <%s>" % (s.Location, s.Caption, s.Command)
+        # print "[%s] %s <%s>" % (s.Location, s.Caption, s.Command)
 
-def get_updates(output):
-    outdir = output + "/vol"
-    if not os.path.exists(outdir): os.makedirs(outdir)
-    output = output + "/vol/updates.json"
-    c = wmi.WMI()
-    patch_list = []
-    for patch in c.Win32_QuickFixEngineering():
-        data = { 'Description': patch.Description,
-             'HotFixID': patch.HotFixID,
-             'InstalledOn': patch.InstalledOn }
+# def get_updates(output):
+    # outdir = output + "/vol"
+    # if not os.path.exists(outdir): os.makedirs(outdir)
+    # output = output + "/vol/updates.json"
+    # c = wmi.WMI()
+    # patch_list = []
+    # for patch in c.Win32_QuickFixEngineering():
+        # data = { 'Description': patch.Description,
+             # 'HotFixID': patch.HotFixID,
+             # 'InstalledOn': patch.InstalledOn }
 
-        patch_list.append(data)
+        # patch_list.append(data)
 
-    with open(output,'w') as outfile:
-        for i in patch_list:
-            json.dump(i, outfile)
+    # with open(output,'w') as outfile:
+        # for i in patch_list:
+            # json.dump(i, outfile)
 
-def get_network(output):
-    output = output + "/vol/network.json"
-    pass
+# def get_network(output):
+    # output = output + "/vol/network.json"
+    # pass
 
 def directoryRecurse(directoryObject, parentPath,search):
   for entryObject in directoryObject:
@@ -129,10 +129,9 @@ def directoryRecurse(directoryObject, parentPath,search):
         #print e
         continue
 
-def timeline(imagefile,output,filename,dirPath,search):
-    outdir = output + "/vol"
-    if not os.path.exists(outdir): os.makedirs(outdir)
-    output = output + "/vol/" + filename
+def timeline(imagefile,output,dirPath,search):
+    if not os.path.exists(output): os.makedirs(output)
+    output = output + str(imagefile) +".csv"
     outfile = open(output,'wb')
     outfile.write('"Inode","Full Path","Creation Time","Modified Time","Accessed Time","Size","MD5 Hash","SHA1 Hash"\n')
     global wr
