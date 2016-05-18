@@ -5,6 +5,7 @@ import os
 import zipfile
 import datetime
 
+
 def create_doc(template_file, out_file, replaceText):
     templateDocx = zipfile.ZipFile(template_file)
     outdir = '/'.join(out_file.split('/')[:-1])
@@ -19,13 +20,13 @@ def create_doc(template_file, out_file, replaceText):
     templateDocx.close()
     newDocx.close()
     
-basepath_in = '/TemplateDir/'
-basepath_out = '/OutputDir/'
-    
+basepath_in = 'c:/tools/github/dfir-scripts/reporter/'
+basepath_out = 'c:/tools/github/dfir-scripts/reporter/output/'
+
 for template_file in os.listdir(basepath_in):
   if template_file.endswith('.docx'):
     replaceText = {
-                    "{{AUTHOR}}" : 'Gianluca Nieri',
+                    "Document Control and Distribution" : 'Document Control',
                     "{{PID}}" : 'P12345',
                     "{{PROJECT_TITLE}}" : 'Go to Mars',
                     "{{PROJECT_AREA}}" : 'Long shots',

@@ -1,0 +1,20 @@
+205.202.51.8	80	US	United States	anonymous	no	yes	2 seconds ago
+198.98.50.15	80	US	United States	anonymous	no	no	2 seconds ago
+167.198.80.83	3128	US	United States	anonymous	no	no	2 seconds ago
+165.139.149.169	3128	US	United States	elite proxy	no	yes	2 seconds ago
+64.13.158.245	80	US	United States	elite proxy	no	yes	10 minutes ago
+107.151.136.198	80	US	United States	anonymous	no	no	10 minutes ago
+107.151.152.213	80	US	United States	anonymous	no	no	10 minutes ago
+107.151.152.219	80	US	United States	anonymous	no	no	10 minutes ago
+107.151.136.212	80	US	United States	anonymous	no	no	10 minutes ago
+207.62.234.53	8118	US	United States	elite proxy	no	yes	20 minutes ago
+107.151.136.206	80	US	United States	anonymous	no	no	20 minutes ago
+104.236.51.165	8080	US	United States	elite proxy	no	no	20 minutes ago
+107.151.142.117	80	US	United States	anonymous	no	no	20 minutes ago
+64.53.217.196	8080	US	United States	elite proxy	no	yes	20 minutes ago
+107.151.152.220	80	US	United States	anonymous	no	no	22 minutes ago
+107.151.136.197	80	US	United States	anonymous	no	no	30 minutes ago
+107.151.152.222	80	US	United States	anonymous	no	no	31 minutes ago
+107.151.152.214	80	US	United States	anonymous	no	no	31 minutes ago
+107.151.136.218	80	US	United States	anonymous	no	no	31 minutes ago
+107.151.152.210	80	US	United States	anonymous	no	no	31 minutes ago
