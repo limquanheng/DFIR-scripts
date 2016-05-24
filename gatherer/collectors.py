@@ -8,24 +8,40 @@ import pyewf
 import os
 import re
 import sys
+import time
 from subprocess import Popen,PIPE
 from artifacts import files,directories
 
-class ewf_Img_Info(pytsk3.Img_Info):
-  def __init__(self, ewf_handle):
-    self._ewf_handle = ewf_handle
-    super(ewf_Img_Info, self).__init__(
-        url="", type=pytsk3.TSK_IMG_TYPE_EXTERNAL)
+def mount(iFile):
+    class ewf_Img_Info(pytsk3.Img_Info):
+      def __init__(self, ewf_handle):
+        self._ewf_handle = ewf_handle
+        super(ewf_Img_Info, self).__init__(
+            url="", type=pytsk3.TSK_IMG_TYPE_EXTERNAL)
 
-  def close(self):
-    self._ewf_handle.close()
+      def close(self):
+        self._ewf_handle.close()
 
-  def read(self, offset, size):
-    self._ewf_handle.seek(offset)
-    return self._ewf_handle.read(size)
+      def read(self, offset, size):
+        self._ewf_handle.seek(offset)
+        return self._ewf_handle.read(size)
 
-  def get_size(self):
-    return self._ewf_handle.get_media_size()
+      def get_size(self):
+        return self._ewf_handle.get_media_size()
+
+    if iFile.lower().endswith(".e01"):
+        filenames = pyewf.glob(iFile)
+        ewf_handle = pyewf.handle()
+        ewf_handle.open(filenames)
+        imagehandle = ewf_Img_Info(ewf_handle)
+
+        partitionTable = pytsk3.Volume_Info(imagehandle)
+
+    else:
+        imagehandle = pytsk3.Img_Info(iFile)
+        partitionTable = pytsk3.Volume_Info(imagehandle)
+
+    return partitionTable, imagehandle
 
 def directoryRecurse(directoryObject,parentPath,search,extract,timeline):
   for entryObject in directoryObject:
@@ -100,16 +116,7 @@ def hashing(iFile,oDir,systemName,search):
     global wr
     wr = csv.writer(outfile, quoting=csv.QUOTE_ALL)
 
-    if iFile.lower().endswith(".e01") or iFile.lower().endswith("vmdk"):
-        filenames = pyewf.glob(iFile)
-        ewf_handle = pyewf.handle()
-        ewf_handle.open(filenames)
-        imagehandle = ewf_Img_Info(ewf_handle)
-        partitionTable = pytsk3.Volume_Info(imagehandle)
 
-    else:
-        imagehandle = pytsk3.Img_Info(iFile)
-        partitionTable = pytsk3.Volume_Info(imagehandle)
 
     for partition in partitionTable:
       print partition.addr, partition.desc, "%ss(%s)" % (partition.start, partition.start * 512), partition.len
@@ -122,18 +129,8 @@ def hashing(iFile,oDir,systemName,search):
 
 def collectFromDisk(iFile,oDir,systemName):
     if not os.path.exists(oDir): os.makedirs(oDir)
-    if iFile.lower().endswith(".e01"):
-        filenames = pyewf.glob(iFile)
-        ewf_handle = pyewf.handle()
-        ewf_handle.open(filenames)
-        imagehandle = ewf_Img_Info(ewf_handle)
 
-        partitionTable = pytsk3.Volume_Info(imagehandle)
-
-    else:
-        imagehandle = pytsk3.Img_Info(iFile)
-        partitionTable = pytsk3.Volume_Info(imagehandle)
-
+    partitionTable, imagehandle = mount(iFile)
 
     for partition in partitionTable:
       #print partition.addr, partition.desc, "%ss(%s)" % (partition.start, partition.start * 512), partition.len
@@ -212,7 +209,7 @@ def collectFromDisk(iFile,oDir,systemName):
         except:
             pass
 
-def fastIR_systems(iDir,oDir):
+def case_management(iDir,oDir):
     systems = []
     mostIps = 0
     if not os.path.exists(oDir): os.makedirs(oDir)
@@ -292,7 +289,8 @@ def fastIR_EVT_Logins(iDir,oDir):
                 for row in reader:
                     linecount +=1
                     try:
-                        if row[5] == "528" or row[5] == "540" or row[5] == "552" or row[5] == "4624":
+                        if row[5] == "528" or row[5] == "529" or row[5] == "540"  or row[5] == "4624" or row[5] == "4625":
+
                             if row[11] == "2":
                                 string =  str(row[7] + ",Interactive," + row[8]+ "," +row[9]+","+row[5]+","+row[11]+","+row[13]+","+row[21]+","+row[0] + ","  + fname+ "\n")
                                 logons.append(string)
@@ -304,6 +302,11 @@ def fastIR_EVT_Logins(iDir,oDir):
                             elif row[11] == "10":
                                 string =  str(row[7] + ",RDP," + row[8]+ "," +row[9]+","+row[5]+","+row[11]+","+row[13]+","+row[21]+","+row[0] + ","  + fname+ "\n")
                                 logons.append(string)
+
+                        elif row[5] == "552" or row[5] == "4648":
+                                string =  str(row[7] + ",RunAs," + row[12]+ "," +row[13]+","+row[5]+",RunAs,"+"N/A"+","+row[15]+","+row[16] + ","  + fname+ "\n")
+                                logons.append(string)
+
 
                     except IndexError:
                         print "Parsing error on line", linecount, " of ", fname
@@ -355,7 +358,6 @@ def fileExtract(iDir,oDir):
 
                 except IOError:
                     pass
-
                 print "Extracting Files From: ", fname
 
 def fileHashing(iDir,oDir,search):
@@ -377,6 +379,7 @@ def fileHashing(iDir,oDir,search):
                 #print "Extracting Files From: ", fname
 
 def parseEVTX(iDir,oDir):
+
     events = ""
     if not os.path.exists(oDir): os.makedirs(oDir)
     for root, dirs, files in os.walk(iDir, topdown=False):
@@ -400,7 +403,7 @@ def parseEVTX(iDir,oDir):
     outfile.write(events)
     outfile.close()
 
-def parseEVTX2(iDir,oDir):
+
     infile = "events.csv"
     outfile = open('logons.csv','a')
     print "Reading: ", infile
